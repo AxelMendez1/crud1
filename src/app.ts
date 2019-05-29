@@ -1,10 +1,12 @@
 import express from 'express';
 import morgan from 'morgan';
 import exphbs from 'express-handlebars';
-import path from 'path';
+import path, { dirname } from 'path';
 
 //routes
 import indexRoutes from './routes/index';
+import taskRoutes from './routes/tasks';
+
 
 class Application {
     app: express.Application;
@@ -29,16 +31,21 @@ class Application {
     }
     middlewars(){
         this.app.use(morgan('dev'));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({extended: false}));
     }
 
     routes(){
-        this.app.use(indexRoutes);
+        this.app.use (indexRoutes);
+        this.app.use('/tasks', taskRoutes);
         
-    }
 
 
-
-    start() {
+        this.app.use(express.static(path.join(__dirname, 'public')));
+        
+        }
+        
+        start() {
         this.app.listen(this.app.get('port'), () => {
             console.log('server on port', this.app.get('port'));
 
